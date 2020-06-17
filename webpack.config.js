@@ -42,10 +42,26 @@ module.exports = {
         ],
       },
       {
-        test: /\.(png|svg|jpg|gif)$/,
+        test: /\.(png|jpg|gif)$/,
         use: [
           'file-loader',
         ],
+      },
+      {
+        test: /\.svg$/,
+        use: [
+          'svg-sprite-loader',
+          {
+            loader: 'svgo-loader',
+            options: {
+              plugins: [
+                { removeNonInheritableGroupAttrs: true },
+                { collapseGroups: true },
+                { removeAttrs: { attrs: '(fill|stroke|fill-opacity)' } },
+              ],
+            }
+          }
+        ]
       },
       {
         test: /\.pug$/,
@@ -71,6 +87,7 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         { from: 'src/assets/images/', to: 'assets/images' },
+        { from: 'src/assets/svg/', to: 'assets/svg' }
       ],
     }),
     new MiniCssExtractPlugin({

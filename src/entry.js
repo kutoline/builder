@@ -1,1 +1,2 @@
-import './entry.scss'
+import './entry.scss';
+import '@core/sprite.js';
