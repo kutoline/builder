@@ -1,6 +1,7 @@
-@import '@core/fonts.scss';
+@import '@core/normalize.scss';
+@import 'core/fonts.scss';
 
 body {
-  font-family: 'Open Sans';
+  font-family: 'Open Sans', sans-serif;
   display: flex;
 }

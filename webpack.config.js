@@ -1,8 +1,10 @@
 const path = require('path');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const fs = require('fs');
 const CopyPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 const pagesPath = path.resolve(__dirname, 'src/pages/')
 const pages = fs.readdirSync(pagesPath).filter(file => {
   return file.endsWith('.pug');
@@ -53,7 +55,7 @@ module.exports = {
         test: /\.(woff|woff2|eot|ttf|otf)$/,
         loader: 'file-loader',
         options: {
-          name: '[name].[ext]'
+          name: 'assets/fonts/[name].[ext]'
         }
       },
     ],
@@ -65,6 +67,7 @@ module.exports = {
         filename: `./${page.replace(/\.pug/, '.html')}`
       })
     ),
+    new CleanWebpackPlugin(),
     new CopyPlugin({
       patterns: [
         { from: 'src/assets/images/', to: 'assets/images' },
