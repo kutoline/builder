@@ -1,7 +1,8 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const fs = require('fs');
-
+const CopyPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const pagesPath = path.resolve(__dirname, 'src/pages/')
 const pages = fs.readdirSync(pagesPath).filter(file => {
   return file.endsWith('.pug');
@@ -13,13 +14,28 @@ module.exports = {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist')
   },
+  resolve: {
+    alias: {
+      '@core': path.resolve(__dirname, 'src/core/'),
+    }
+  },
   module: {
     rules: [
       {
         test: /\.s[ac]ss$/i,
         use: [
-          'style-loader',
+          MiniCssExtractPlugin.loader,
           'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              plugins: function () {
+                return [
+                  require('autoprefixer')({ overrideBrowserslist: "last 5 versions" })
+                ];
+              }
+            }
+          },
           'sass-loader',
         ],
       },
@@ -35,9 +51,10 @@ module.exports = {
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/,
-        use: [
-          'file-loader',
-        ],
+        loader: 'file-loader',
+        options: {
+          name: '[name].[ext]'
+        }
       },
     ],
   },
@@ -45,8 +62,17 @@ module.exports = {
     ...pages.map(page =>
       new HtmlWebpackPlugin({
         template: `${pagesPath}/${page}`,
-        filename: `./${page.replace(/\.pug/,'.html')}`
+        filename: `./${page.replace(/\.pug/, '.html')}`
       })
-    )
+    ),
+    new CopyPlugin({
+      patterns: [
+        { from: 'src/assets/images/', to: 'assets/images' },
+      ],
+    }),
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+      chunkFilename: '[id].css',
+    }),
   ],
 }
